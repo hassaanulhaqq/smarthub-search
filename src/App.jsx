@@ -2,89 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 const ADMIN_PIN = "2580";
 
-const TRANSLATIONS = {
-  en: {
-    title: "SmartHub Search",
-    adminBtn: "Admin Panel 🔒",
-    heroTitle: "Verify & Discover Leading",
-    heroSubtitle: "Curated, high-value web directory for remote professionals and independent learners.",
-    searchPlaceholder: "Search AI tools, courses, remote workflows...",
-    verified: "Verified Platform",
-    explore: "Explore Now →",
-    featured: "Featured Partner",
-    all: "All",
-    aiTools: "AI Tools",
-    courses: "Courses",
-    productivity: "Productivity",
-    remoteJobs: "Remote Jobs",
-    footer: "© 2026 SmartHub Search. All rights reserved.",
-    adminTitle: "SmartHub Admin Dashboard",
-    adminSubtitle: "Manage new links, sponsored placements, and affiliate listings.",
-    viewSite: "View Website",
-    logout: "Log Out",
-    addNew: "Add New Tool or Link",
-    titleLabel: "Title / Name",
-    catLabel: "Category",
-    urlLabel: "Target URL / Affiliate Link",
-    descLabel: "Short Description",
-    sponsoredLabel: "Sponsored Slot (Featured on top)",
-    addButton: "Add to Website",
-    existingItems: "Current Listings",
-    noItems: "No custom listings added yet.",
-    deleteBtn: "Delete",
-    loginTitle: "SmartHub Admin Access",
-    loginDesc: "Enter secret PIN to unlock the control panel",
-    pinPlaceholder: "Secret PIN",
-    loginBtn: "Log In",
-    backHome: "← Back to Website",
-    wrongPin: "Incorrect PIN! Please try again."
-  },
-  ur: {
-    title: "اسمارٹ ہب سرچ",
-    adminBtn: "ایڈمن پینل 🔒",
-    heroTitle: "بہترین AI ٹولز اور کورسز",
-    heroSubtitle: "فری لانسرز، طلبہ اور پروفیشنلز کے لیے تصدیق شدہ ویب ڈائریکٹری اور وسائل۔",
-    searchPlaceholder: "ٹولز، کورسز، یا ریموٹ جابز تلاش کریں...",
-    verified: "تصدیق شدہ پلیٹ فارم",
-    explore: "ابھی وزٹ کریں ←",
-    featured: "نمایاں پارٹنر",
-    all: "تمام",
-    aiTools: "AI ٹولز",
-    courses: "کورسز",
-    productivity: "پروڈکٹیوٹی",
-    remoteJobs: "ریموٹ جابز",
-    footer: "© 2026 SmartHub Search۔ جملہ حقوق محفوظ ہیں۔",
-    adminTitle: "SmartHub ایڈمن ڈیش بورڈ",
-    adminSubtitle: "نئے لنکس، اسپانسرز اور افیلیئٹ لسٹنگز کا مکمل انتظام۔",
-    viewSite: "ویب سائٹ دیکھیں",
-    logout: "لاگ آؤٹ",
-    addNew: "نیا ٹول یا لنک شامل کریں",
-    titleLabel: "ٹائٹل / نام",
-    catLabel: "کیٹیگری",
-    urlLabel: "لنک / URL (افیلیئٹ لنک)",
-    descLabel: "مختصر تفصیل",
-    sponsoredLabel: "اسپانسرڈ سلاٹ (ٹاپ پر نمایاں کریں)",
-    addButton: "ویب سائٹ میں شامل کریں",
-    existingItems: "موجودہ لسٹنگز",
-    noItems: "ابھی تک کوئی نیا کسٹم لنک شامل نہیں کیا گیا۔",
-    deleteBtn: "ڈیلیٹ کریں",
-    loginTitle: "SmartHub ایڈمن رسائی",
-    loginDesc: "کنٹرول پینل کھولنے کے لیے خفیہ PIN درج کریں",
-    pinPlaceholder: "خفیہ PIN",
-    loginBtn: "لاگ ان کریں",
-    backHome: "← ہوم پیج پر واپس جائیں",
-    wrongPin: "غلط PIN! دوبارہ کوشش کریں۔"
-  }
-};
-
-const BASE_ITEMS = [
+const INITIAL_DATA = [
   {
     id: 1,
     title: "Google AI Essentials",
     category: "Courses",
     url: "https://coursera.org",
-    descriptionEn: "Learn foundational AI concepts and productivity tools from Google experts.",
-    descriptionUr: "گوگل کے ماہرین سے بنیادی AI کے تصورات اور ٹولز سیکھیں۔",
+    descEn: "Learn foundational AI concepts and productivity tools from Google experts.",
+    descUr: "گوگل کے ماہرین سے بنیادی AI کے تصورات اور ٹولز سیکھیں۔",
     isSponsored: true
   },
   {
@@ -92,8 +17,8 @@ const BASE_ITEMS = [
     title: "DeepLearning.AI Prompt Engineering",
     category: "Courses",
     url: "https://coursera.org",
-    descriptionEn: "Master LLM prompting techniques and workflows directly from Andrew Ng.",
-    descriptionUr: "اینڈریو این جی سے جدید پرامپٹ انجینئرنگ اور طریقے سیکھیں۔",
+    descEn: "Master LLM prompting techniques and workflows directly from Andrew Ng.",
+    descUr: "اینڈریو این جی سے جدید پرامپٹ انجینئرنگ اور طریقے سیکھیں۔",
     isSponsored: false
   },
   {
@@ -101,8 +26,8 @@ const BASE_ITEMS = [
     title: "Perplexity Pro Research Suite",
     category: "AI Tools",
     url: "https://perplexity.ai",
-    descriptionEn: "Real-time discovery and multi-source verified search engine for professionals.",
-    descriptionUr: "پیشہ ور افراد کے لیے جدید، ریئل ٹائم اور تصدیق شدہ ریسرچ انجن۔",
+    descEn: "Real-time discovery and multi-source verified search engine for professionals.",
+    descUr: "پیشہ ور افراد کے لیے جدید، ریئل ٹائم اور تصدیق شدہ ریسرچ انجن۔",
     isSponsored: true
   },
   {
@@ -110,98 +35,481 @@ const BASE_ITEMS = [
     title: "Claude 3.5 Sonnet Ecosystem",
     category: "AI Tools",
     url: "https://anthropic.com",
-    descriptionEn: "Advanced coding, analytical reasoning, and long-form document processing.",
-    descriptionUr: "جدید کوڈنگ، تفصیلی تجزیہ اور طویل دستاویزات پروسیسنگ کے لیے بہترین۔",
+    descEn: "Advanced coding, analytical reasoning, and long-form document processing.",
+    descUr: "جدید کوڈنگ، تفصیلی تجزیہ اور طویل دستاویزات پروسیسنگ کے لیے بہترین۔",
+    isSponsored: false
+  },
+  {
+    id: 5,
+    title: "Upwork Remote Talent Network",
+    category: "Remote Jobs",
+    url: "https://upwork.com",
+    descEn: "Global marketplace for top freelance talent, contracts, and remote engineering jobs.",
+    descUr: "فری لانسرز اور ریموٹ جابز کے لیے دنیا کا سب سے بڑا پلیٹ فارم۔",
+    isSponsored: false
+  },
+  {
+    id: 6,
+    title: "Notion AI Workspace",
+    category: "Productivity",
+    url: "https://notion.so",
+    descEn: "Connected workspace with integrated artificial intelligence for notes and docs.",
+    descUr: "دفتری کام، نوٹس اور پراجیکٹ مینجمنٹ کے لیے بہترین AI ٹول۔",
     isSponsored: false
   }
 ];
 
 export default function App() {
-  const [isDark, setIsDark] = useState(true);
-  const [lang, setLang] = useState('en');
-  const [isAdminView, setIsAdminView] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [theme, setTheme] = useState('dark');
+  const [lang, setLang] = useState('ur');
+  const [search, setSearch] = useState('');
+  const [currentCat, setCurrentCat] = useState('All');
+  
+  // Admin states
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [pinInput, setPinInput] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [customItems, setCustomItems] = useState([]);
+  const [loginError, setLoginError] = useState('');
+  
+  // Data list
+  const [items, setItems] = useState(() => {
+    const saved = localStorage.getItem('smarthub_data_v1');
+    return saved ? JSON.parse(saved) : INITIAL_DATA;
+  });
 
-  // Form State
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('AI Tools');
-  const [url, setUrl] = useState('');
-  const [description, setDescription] = useState('');
-  const [isSponsored, setIsSponsored] = useState(false);
-
-  const t = TRANSLATIONS[lang];
+  // Admin form
+  const [formTitle, setFormTitle] = useState('');
+  const [formCat, setFormCat] = useState('AI Tools');
+  const [formUrl, setFormUrl] = useState('');
+  const [formDesc, setFormDesc] = useState('');
+  const [formSponsored, setFormSponsored] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('smarthub_custom_items');
-    if (saved) {
-      try {
-        setCustomItems(JSON.parse(saved));
-      } catch (e) {
-        setCustomItems([]);
-      }
-    }
-  }, []);
+    localStorage.setItem('smarthub_data_v1', JSON.stringify(items));
+  }, [items]);
 
   const handleLogin = (e) => {
     e.preventDefault();
     if (pinInput === ADMIN_PIN) {
-      setIsAuthenticated(true);
-      setErrorMsg('');
+      setIsLoggedIn(true);
+      setLoginError('');
+      setPinInput('');
     } else {
-      setErrorMsg(t.wrongPin);
+      setLoginError(lang === 'ur' ? 'غلط پن کوڈ! دوبارہ درج کریں۔' : 'Incorrect PIN! Try again.');
     }
   };
 
   const handleAddItem = (e) => {
     e.preventDefault();
-    if (!title || !url) return;
+    if (!formTitle || !formUrl) return;
 
     const newItem = {
       id: Date.now(),
-      title,
-      category,
-      url,
-      descriptionEn: description,
-      descriptionUr: description,
-      isSponsored
+      title: formTitle,
+      category: formCat,
+      url: formUrl,
+      descEn: formDesc,
+      descUr: formDesc,
+      isSponsored: formSponsored
     };
 
-    const updated = [newItem, ...customItems];
-    setCustomItems(updated);
-    localStorage.setItem('smarthub_custom_items', JSON.stringify(updated));
-
-    setTitle('');
-    setUrl('');
-    setDescription('');
-    setIsSponsored(false);
+    setItems([newItem, ...items]);
+    setFormTitle('');
+    setFormUrl('');
+    setFormDesc('');
+    setFormSponsored(false);
   };
 
-  const handleDelete = (id) => {
-    const updated = customItems.filter(item => item.id !== id);
-    setCustomItems(updated);
-    localStorage.setItem('smarthub_custom_items', JSON.stringify(updated));
+  const handleDeleteItem = (id) => {
+    setItems(items.filter(item => item.id !== id));
   };
 
-  const allItems = [...customItems, ...BASE_ITEMS];
+  // Search & Filter Logic
+  const filteredList = items.filter(item => {
+    const q = search.trim().toLowerCase();
+    const titleMatch = item.title.toLowerCase().includes(q);
+    const descEnMatch = item.descEn ? item.descEn.toLowerCase().includes(q) : false;
+    const descUrMatch = item.descUr ? item.descUr.toLowerCase().includes(q) : false;
+    const catMatch = item.category.toLowerCase().includes(q);
 
-  const filteredItems = allItems.filter(item => {
-    const desc = lang === 'ur' ? (item.descriptionUr || item.descriptionEn) : item.descriptionEn;
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          (desc && desc.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesQuery = q === '' || titleMatch || descEnMatch || descUrMatch || catMatch;
+    const matchesCategory = currentCat === 'All' || item.category === currentCat;
+
+    return matchesQuery && matchesCategory;
   });
 
+  const isDark = theme === 'dark';
+  const isUr = lang === 'ur';
+
   // Admin View
-  if (isAdminView) {
-    if (!isAuthenticated) {
+  if (isAdminOpen) {
+    if (!isLoggedIn) {
       return (
-        <div className={`min-h-screen ${isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'} flex items-center justify-center p-4`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-          <div className={`max-w-md w-full ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border rounded-2xl p-8 shadow-2xl`}>
-            <div className="text-center mb-6">
-              <h1 className="text-2xl font-bold mb-2">{t
+        <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-slate-50 text-slate-900'} flex items-center justify-center p-4`} dir={isUr ? 'rtl' : 'ltr'}>
+          <div className={`max-w-md w-full ${isDark ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl p-8 shadow-2xl`}>
+            <h2 className="text-2xl font-black text-center mb-2">
+              {isUr ? 'ایڈمن ڈیش بورڈ رسائی' : 'Admin Dashboard Login'}
+            </h2>
+            <p className={`text-xs text-center mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              {isUr ? 'خفیہ 4 ہندسوں کا PIN درج کریں' : 'Enter 4-digit secret PIN'}
+            </p>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <input
+                type="password"
+                maxLength={6}
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value)}
+                placeholder="****"
+                className={`w-full text-center text-2xl tracking-[0.5em] py-3 rounded-2xl border ${
+                  isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-100 border-slate-300 text-slate-900'
+                } focus:outline-none focus:border-indigo-500`}
+                autoFocus
+              />
+              {loginError && <p className="text-rose-500 text-xs text-center font-bold">{loginError}</p>}
+              <button
+                type="submit"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold transition-all shadow-lg shadow-indigo-600/30"
+              >
+                {isUr ? 'لاگ ان کریں' : 'Unlock Dashboard'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAdminOpen(false)}
+                className={`w-full py-2 text-xs font-semibold ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
+              >
+                {isUr ? '← ہوم پیج پر واپس جائیں' : '← Back to Home'}
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-slate-50 text-slate-900'} p-6 md:p-12`} dir={isUr ? 'rtl' : 'ltr'}>
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-wrap items-center justify-between pb-6 border-b border-slate-800 gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-black">
+                {isUr ? 'اسمارٹ ہب ایڈمن روم' : 'SmartHub Management'}
+              </h1>
+              <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                {isUr ? 'نئے ٹولز، افیلیئٹ لنکس اور اسپانسرڈ سلاٹ مینیجر' : 'Add new items, modify links and featured listings'}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsAdminOpen(false)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold border ${isDark ? 'bg-slate-900 border-slate-800 text-slate-200' : 'bg-white border-slate-300 text-slate-800'}`}
+              >
+                {isUr ? 'سائٹ دیکھیں' : 'View Live Site'}
+              </button>
+              <button
+                onClick={() => { setIsLoggedIn(false); setIsAdminOpen(false); }}
+                className="px-4 py-2 bg-rose-600/20 text-rose-400 hover:bg-rose-600/30 border border-rose-500/30 rounded-xl text-xs font-bold"
+              >
+                {isUr ? 'لاگ آؤٹ' : 'Log Out'}
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            <div className={`lg:col-span-1 p-6 rounded-3xl border h-fit ${isDark ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'}`}>
+              <h3 className="font-bold text-base mb-4">{isUr ? 'نیا آئٹم شامل کریں' : 'Add New Directory Entry'}</h3>
+              <form onSubmit={handleAddItem} className="space-y-4 text-xs font-medium">
+                <div>
+                  <label className="block mb-1 opacity-70">{isUr ? 'نام / ٹائٹل' : 'Platform / Tool Title'}</label>
+                  <input
+                    type="text"
+                    required
+                    value={formTitle}
+                    onChange={(e) => setFormTitle(e.target.value)}
+                    placeholder={isUr ? 'مثلاً Coursera Plus' : 'e.g. Perplexity Pro'}
+                    className={`w-full p-2.5 rounded-xl border ${isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'} focus:outline-none focus:border-indigo-500`}
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-1 opacity-70">{isUr ? 'کیٹیگری' : 'Category'}</label>
+                  <select
+                    value={formCat}
+                    onChange={(e) => setFormCat(e.target.value)}
+                    className={`w-full p-2.5 rounded-xl border ${isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'} focus:outline-none focus:border-indigo-500`}
+                  >
+                    <option value="AI Tools">AI Tools</option>
+                    <option value="Courses">Courses</option>
+                    <option value="Productivity">Productivity</option>
+                    <option value="Remote Jobs">Remote Jobs</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block mb-1 opacity-70">{isUr ? 'افیلیئٹ / ٹارگٹ URL' : 'Target / Affiliate URL'}</label>
+                  <input
+                    type="url"
+                    required
+                    value={formUrl}
+                    onChange={(e) => setFormUrl(e.target.value)}
+                    placeholder="https://..."
+                    className={`w-full p-2.5 rounded-xl border ${isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'} focus:outline-none focus:border-indigo-500`}
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-1 opacity-70">{isUr ? 'مختصر تفصیل' : 'Description'}</label>
+                  <textarea
+                    rows={3}
+                    value={formDesc}
+                    onChange={(e) => setFormDesc(e.target.value)}
+                    placeholder={isUr ? 'ٹول کے بارے میں تفصیل درج کریں...' : 'Short brief about platform benefits...'}
+                    className={`w-full p-2.5 rounded-xl border ${isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'} focus:outline-none focus:border-indigo-500`}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="checkbox"
+                    id="adminSponsor"
+                    checked={formSponsored}
+                    onChange={(e) => setFormSponsored(e.target.checked)}
+                    className="w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer"
+                  />
+                  <label htmlFor="adminSponsor" className="cursor-pointer font-bold text-amber-500">
+                    {isUr ? 'Sponsored (ٹاپ پر نمایاں رکھیں)' : 'Featured Partner Slot'}
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all mt-2"
+                >
+                  {isUr ? 'ویب سائٹ میں شامل کریں' : 'Publish Listing'}
+                </button>
+              </form>
+            </div>
+
+            <div className={`lg:col-span-2 p-6 rounded-3xl border ${isDark ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'}`}>
+              <h3 className="font-bold text-base mb-4">
+                {isUr ? `موجودہ لسٹنگز (${items.length})` : `All Verified Items (${items.length})`}
+              </h3>
+              <div className="space-y-3">
+                {items.map(item => (
+                  <div
+                    key={item.id}
+                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                      isDark ? 'bg-[#0b0f19] border-slate-800' : 'bg-slate-50 border-slate-200'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm">{item.title}</span>
+                        {item.isSponsored && (
+                          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                            SPONSORED
+                          </span>
+                        )}
+                        <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/10 text-indigo-400 font-bold">
+                          {item.category}
+                        </span>
+                      </div>
+                      <p className={`text-xs mt-1 line-clamp-1 opacity-70`}>{isUr ? (item.descUr || item.descEn) : item.descEn}</p>
+                      <a href={item.url} target="_blank" rel="noreferrer" className="text-[11px] text-indigo-400 hover:underline">
+                        {item.url}
+                      </a>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteItem(item.id)}
+                      className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg text-xs font-bold self-end sm:self-center"
+                    >
+                      {isUr ? 'ڈیلیٹ' : 'Delete'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Home Screen
+  return (
+    <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-[#f8fafc] text-slate-900'} flex flex-col transition-colors duration-200`} dir={isUr ? 'rtl' : 'ltr'}>
+      <header className={`sticky top-0 z-50 border-b backdrop-blur-md px-4 sm:px-8 py-3.5 ${
+        isDark ? 'bg-[#0b0f19]/80 border-slate-800/80' : 'bg-white/80 border-slate-200'
+      }`}>
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-indigo-500/20">
+              S
+            </div>
+            <div>
+              <span className="text-lg font-black tracking-tight block leading-none">SmartHub</span>
+              <span className="text-[10px] text-indigo-400 tracking-wider font-bold uppercase">Search Directory</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLang(isUr ? 'en' : 'ur')}
+              className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+                isDark ? 'bg-[#111827] border-slate-700 text-slate-200 hover:border-slate-500' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400'
+              }`}
+            >
+              {isUr ? 'English' : 'اردو'}
+            </button>
+
+            <button
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              className={`p-2 rounded-xl border text-sm transition-all ${
+                isDark ? 'bg-[#111827] border-slate-700 text-amber-400 hover:border-slate-500' : 'bg-white border-slate-300 text-indigo-600 hover:border-slate-400'
+              }`}
+              title="Toggle Theme"
+            >
+              {isDark ? '☀️' : '🌙'}
+            </button>
+
+            <button
+              onClick={() => setIsAdminOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-bold transition-all flex items-center gap-1.5"
+            >
+              <span>{isUr ? 'ایڈمن' : 'Admin'}</span>
+              <span>🔒</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
+            {isUr ? (
+              <>مستند اور منتخب <span className="text-indigo-500">AI ٹولز</span> اور جدید کورسز</>
+            ) : (
+              <>Verify & Discover Leading <span className="text-indigo-500">AI Tools</span> & Courses</>
+            )}
+          </h1>
+          <p className={`text-sm sm:text-base font-medium max-w-xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            {isUr
+              ? 'طلبہ، ریموٹ پروفیشنلز اور فری لانسرز کے لیے تصدیق شدہ ویب لنکس اور پورٹل۔'
+              : 'Curated high-value directory indexing verified productivity software and accredited certifications.'}
+          </p>
+
+          <div className="mt-8 relative max-w-2xl mx-auto">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={isUr ? 'کسی بھی ٹول، کورس یا جاب کا نام لکھ کر تلاش کریں...' : 'Search AI tools, prompt workflows, courses...'}
+              className={`w-full py-4 px-6 rounded-2xl border text-sm sm:text-base shadow-xl focus:outline-none focus:border-indigo-500 transition-all ${
+                isDark ? 'bg-[#111827] border-slate-800 placeholder-slate-500 text-white' : 'bg-white border-slate-300 placeholder-slate-400 text-slate-900'
+              }`}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute top-1/2 -translate-y-1/2 end-4 text-xs opacity-50 hover:opacity-100"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+            {[
+              { id: 'All', ur: 'تمام', en: 'All' },
+              { id: 'AI Tools', ur: 'AI ٹولز', en: 'AI Tools' },
+              { id: 'Courses', ur: 'کورسز', en: 'Courses' },
+              { id: 'Productivity', ur: 'پروڈکٹیوٹی', en: 'Productivity' },
+              { id: 'Remote Jobs', ur: 'ریموٹ جابز', en: 'Remote Jobs' }
+            ].map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setCurrentCat(cat.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  currentCat === cat.id
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                    : isDark
+                      ? 'bg-[#111827] border border-slate-800 text-slate-400 hover:text-white'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {isUr ? cat.ur : cat.en}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8">
+          {filteredList.map(item => (
+            <div
+              key={item.id}
+              className={`p-6 rounded-3xl border transition-all duration-300 flex flex-col justify-between ${
+                item.isSponsored
+                  ? isDark
+                    ? 'bg-[#111827]/90 border-indigo-500/40 shadow-xl shadow-indigo-600/5'
+                    : 'bg-indigo-50/40 border-indigo-200 shadow-xl shadow-indigo-500/5'
+                  : isDark
+                    ? 'bg-[#111827]/40 border-slate-800/80 hover:border-slate-700'
+                    : 'bg-white border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={`text-[11px] font-bold px-3 py-1 rounded-lg ${
+                    isDark ? 'bg-slate-800/70 text-slate-300' : 'bg-slate-100 text-slate-700'
+                  }`}>
+                    {item.category}
+                  </span>
+                  {item.isSponsored && (
+                    <span className="text-[11px] font-black px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                      {isUr ? 'نمایاں پارٹنر' : 'Featured Partner'}
+                    </span>
+                  )}
+                </div>
+                <h2 className="text-xl font-bold mb-2 tracking-tight">{item.title}</h2>
+                <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${
+                  isDark ? 'text-slate-400' : 'text-slate-600'
+                }`}>
+                  {isUr ? (item.descUr || item.descEn) : item.descEn}
+                </p>
+              </div>
+
+              <div className={`mt-6 pt-4 border-t flex items-center justify-between ${
+                isDark ? 'border-slate-800/80' : 'border-slate-100'
+              }`}>
+                <span className="text-[11px] font-semibold opacity-50">
+                  {isUr ? 'تصدیق شدہ پلیٹ فارم' : 'Verified Partner'}
+                </span>
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 inline-flex items-center gap-1.5"
+                >
+                  <span>{isUr ? 'ابھی وزٹ کریں' : 'Explore Now'}</span>
+                  <span>{isUr ? '←' : '→'}</span>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredList.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-sm font-semibold opacity-50">
+              {isUr ? 'آپ کی مطلوبہ تلاش کا کوئی نتیجہ نہیں ملا۔' : 'No matching tools or courses found.'}
+            </p>
+          </div>
+        )}
+      </main>
+
+      <footer className={`border-t py-6 text-center text-xs opacity-60 ${
+        isDark ? 'border-slate-800' : 'border-slate-200'
+      }`}>
+        © 2026 SmartHub Search. {isUr ? 'جملہ حقوق محفوظ ہیں۔' : 'All rights reserved.'}
+      </footer>
+    </div>
+  );
+}
