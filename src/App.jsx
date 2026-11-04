@@ -67,7 +67,7 @@ const INITIAL_DATA = [
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
-  const [lang, setLang] = useState('ur');
+  const [lang, setLang] = useState('en'); // بائی ڈیفالٹ انگلش میں کھلے گا
   const [search, setSearch] = useState('');
   const [currentCat, setCurrentCat] = useState('All');
   
@@ -506,17 +506,26 @@ export default function App() {
       {/* Main Container */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12">
         <div className="text-center max-w-3xl mx-auto mb-10">
+          {/* بیج / ٹیگ لائن */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold mb-4">
+            <span>✨</span>
+            <span>{isUr ? 'سب سے جامع و تصدیق شدہ پلیٹ فارم' : 'The Unified Global Discovery Portal'}</span>
+          </div>
+
+          {/* مین عنوان */}
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
             {isUr ? (
-              <>مستند اور تصدیق شدہ <span className="text-indigo-500">AI وسائل</span> اور کورسز</>
+              <>ایک ہی جگہ پر <span className="text-indigo-500">بہترین AI ٹولز</span>، اسناد اور ریموٹ جابز</>
             ) : (
-              <>Verify & Discover Curated <span className="text-indigo-500">AI Resources</span></>
+              <>Your All-in-One Gateway to <span className="text-indigo-500">AI Tools</span>, Courses & Remote Careers</>
             )}
           </h1>
-          <p className={`text-sm sm:text-base font-medium max-w-xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+
+          {/* نیا ڈسکرپٹو و آسان اوور ویو کیپشن */}
+          <p className={`text-sm sm:text-base font-normal leading-relaxed max-w-2xl mx-auto ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
             {isUr
-              ? 'مطلوبہ ٹول، کورس یا ریموٹ جاب کا نام سرچ کریں، یا نیچے سے تصدیق شدہ پلیٹ فارمز دیکھیں۔'
-              : 'Search any tool, certified course, or remote workflow to explore verified links.'}
+              ? 'انٹرنیٹ پر بکھرے ہوئے سینکڑوں پورٹلز کو ایک محفوظ اور منظم جگہ پر اکٹھا کر دیا گیا ہے۔ جدید ترین AI سافٹ ویئرز دریافت کریں، دنیا کی صف اول یونیورسٹیوں کے سرٹیفیکیشنز تلاش کریں، اور گلوبل ریموٹ ورک تک براہِ راست رسائی حاصل کریں۔'
+              : 'SmartHub consolidates the world\'s top productivity tools, accredited online certifications, and direct remote freelance opportunities into a single verified hub. Explore hand-picked solutions or deep-search global marketplaces in seconds.'}
           </p>
 
           {/* Search Box */}
