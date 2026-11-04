@@ -124,22 +124,59 @@ export default function App() {
     setItems(items.filter(item => item.id !== id));
   };
 
-  // Search & Filter Logic
-  const filteredList = items.filter(item => {
-    const q = search.trim().toLowerCase();
-    const titleMatch = item.title.toLowerCase().includes(q);
-    const descEnMatch = item.descEn ? item.descEn.toLowerCase().includes(q) : false;
-    const descUrMatch = item.descUr ? item.descUr.toLowerCase().includes(q) : false;
-    const catMatch = item.category.toLowerCase().includes(q);
+  const isDark = theme === 'dark';
+  const isUr = lang === 'ur';
 
-    const matchesQuery = q === '' || titleMatch || descEnMatch || descUrMatch || catMatch;
+  // لائیو فلٹرنگ فکس
+  const cleanQuery = search.trim().toLowerCase();
+  const filteredList = items.filter(item => {
+    const titleMatch = item.title ? item.title.toLowerCase().includes(cleanQuery) : false;
+    const descEnMatch = item.descEn ? item.descEn.toLowerCase().includes(cleanQuery) : false;
+    const descUrMatch = item.descUr ? item.descUr.toLowerCase().includes(cleanQuery) : false;
+    const catMatch = item.category ? item.category.toLowerCase().includes(cleanQuery) : false;
+
+    const matchesQuery = cleanQuery === '' || titleMatch || descEnMatch || descUrMatch || catMatch;
     const matchesCategory = currentCat === 'All' || item.category === currentCat;
 
     return matchesQuery && matchesCategory;
   });
 
-  const isDark = theme === 'dark';
-  const isUr = lang === 'ur';
+  // ڈائنامک میٹا سرچ لنکس جنریٹر (براہِ راست سرچ رزلٹس)
+  const encodedQuery = encodeURIComponent(search.trim());
+  const metaEngines = [
+    {
+      name: "Upwork Jobs",
+      badge: isUr ? "فری لانس جابز" : "Freelance Jobs",
+      icon: "💼",
+      url: `https://www.upwork.com/nx/search/jobs/?q=${encodedQuery}`,
+      descUr: `اپ ورک پر "${search.trim()}" کی تصدیق شدہ براہِ راست جابز دیکھیں۔`,
+      descEn: `Explore direct verified job posts for "${search.trim()}" on Upwork.`
+    },
+    {
+      name: "Coursera Certifications",
+      badge: isUr ? "کورسز و اسناد" : "Courses & Degrees",
+      icon: "🎓",
+      url: `https://www.coursera.org/search?query=${encodedQuery}`,
+      descUr: `کورسیرا پر "${search.trim()}" کے سرٹیفیکیشنز اور ماہرانہ ٹریننگ۔`,
+      descEn: `Direct university courses & certifications for "${search.trim()}".`
+    },
+    {
+      name: "Fiverr Marketplace",
+      badge: isUr ? "سروسز اور گگز" : "Gigs & Tasks",
+      icon: "⚡",
+      url: `https://www.fiverr.com/search/gigs?query=${encodedQuery}`,
+      descUr: `فائیور پر "${search.trim()}" سے متعلق ریٹ اور خدمات دیکھیں۔`,
+      descEn: `View high-demand gigs and pricing for "${search.trim()}" on Fiverr.`
+    },
+    {
+      name: "Google Remote Careers",
+      badge: isUr ? "گلوبل جابز" : "Global Openings",
+      icon: "🌐",
+      url: `https://www.google.com/search?q=${encodedQuery}+remote+jobs&ibp=htl;jobs`,
+      descUr: `گوگل جابز انجن پر "${search.trim()}" کی گلوبل اوپننگز براؤز کریں۔`,
+      descEn: `Direct Google Jobs feed for "${search.trim()}" remote openings.`
+    }
+  ];
 
   // Admin View
   if (isAdminOpen) {
@@ -336,6 +373,7 @@ export default function App() {
   // Home Screen
   return (
     <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-[#f8fafc] text-slate-900'} flex flex-col transition-colors duration-200`} dir={isUr ? 'rtl' : 'ltr'}>
+      {/* Header */}
       <header className={`sticky top-0 z-50 border-b backdrop-blur-md px-4 sm:px-8 py-3.5 ${
         isDark ? 'bg-[#0b0f19]/80 border-slate-800/80' : 'bg-white/80 border-slate-200'
       }`}>
@@ -346,7 +384,7 @@ export default function App() {
             </div>
             <div>
               <span className="text-lg font-black tracking-tight block leading-none">SmartHub</span>
-              <span className="text-[10px] text-indigo-400 tracking-wider font-bold uppercase">Search Directory</span>
+              <span className="text-[10px] text-indigo-400 tracking-wider font-bold uppercase">Meta Search & Discovery</span>
             </div>
           </div>
 
@@ -381,27 +419,29 @@ export default function App() {
         </div>
       </header>
 
+      {/* Main Content */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12">
         <div className="text-center max-w-3xl mx-auto mb-10">
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
             {isUr ? (
-              <>مستند اور منتخب <span className="text-indigo-500">AI ٹولز</span> اور جدید کورسز</>
+              <>مطلوبہ جابز، کورسز اور <span className="text-indigo-500">AI ٹولز</span> تلاش کریں</>
             ) : (
-              <>Verify & Discover Leading <span className="text-indigo-500">AI Tools</span> & Courses</>
+              <>Search Direct Jobs, Certifications & <span className="text-indigo-500">AI Tools</span></>
             )}
           </h1>
           <p className={`text-sm sm:text-base font-medium max-w-xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             {isUr
-              ? 'طلبہ، ریموٹ پروفیشنلز اور فری لانسرز کے لیے تصدیق شدہ ویب لنکس اور پورٹل۔'
-              : 'Curated high-value directory indexing verified productivity software and accredited certifications.'}
+              ? 'کسی بھی مخصوص ہنر یا کورس کا نام لکھیں، ہم تمام تصدیق شدہ پورٹلز سے براہِ راست سرچ لنکس سامنے لائیں گے۔'
+              : 'Type any skill, task or certification to access direct deep-search queries across verified platforms.'}
           </p>
 
+          {/* سرچ ان پٹ */}
           <div className="mt-8 relative max-w-2xl mx-auto">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={isUr ? 'کسی بھی ٹول، کورس یا جاب کا نام لکھ کر تلاش کریں...' : 'Search AI tools, prompt workflows, courses...'}
+              placeholder={isUr ? 'مثلاً: Online Excel Jobs یا Python AI Course...' : 'e.g. Online Excel Jobs, Prompt Engineering...'}
               className={`w-full py-4 px-6 rounded-2xl border text-sm sm:text-base shadow-xl focus:outline-none focus:border-indigo-500 transition-all ${
                 isDark ? 'bg-[#111827] border-slate-800 placeholder-slate-500 text-white' : 'bg-white border-slate-300 placeholder-slate-400 text-slate-900'
               }`}
@@ -409,13 +449,14 @@ export default function App() {
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute top-1/2 -translate-y-1/2 end-4 text-xs opacity-50 hover:opacity-100"
+                className="absolute top-1/2 -translate-y-1/2 end-4 text-xs opacity-50 hover:opacity-100 bg-slate-800 text-white px-2 py-1 rounded-md"
               >
-                ✕
+                ✕ {isUr ? 'صاف کریں' : 'Clear'}
               </button>
             )}
           </div>
 
+          {/* کیٹیگریز */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
             {[
               { id: 'All', ur: 'تمام', en: 'All' },
@@ -441,68 +482,126 @@ export default function App() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8">
-          {filteredList.map(item => (
-            <div
-              key={item.id}
-              className={`p-6 rounded-3xl border transition-all duration-300 flex flex-col justify-between ${
-                item.isSponsored
-                  ? isDark
-                    ? 'bg-[#111827]/90 border-indigo-500/40 shadow-xl shadow-indigo-600/5'
-                    : 'bg-indigo-50/40 border-indigo-200 shadow-xl shadow-indigo-500/5'
-                  : isDark
-                    ? 'bg-[#111827]/40 border-slate-800/80 hover:border-slate-700'
-                    : 'bg-white border-slate-200 hover:border-slate-300'
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-[11px] font-bold px-3 py-1 rounded-lg ${
-                    isDark ? 'bg-slate-800/70 text-slate-300' : 'bg-slate-100 text-slate-700'
-                  }`}>
-                    {item.category}
-                  </span>
-                  {item.isSponsored && (
-                    <span className="text-[11px] font-black px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                      {isUr ? 'نمایاں پارٹنر' : 'Featured Partner'}
-                    </span>
-                  )}
-                </div>
-                <h2 className="text-xl font-bold mb-2 tracking-tight">{item.title}</h2>
-                <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${
-                  isDark ? 'text-slate-400' : 'text-slate-600'
-                }`}>
-                  {isUr ? (item.descUr || item.descEn) : item.descEn}
-                </p>
-              </div>
+        {/* ڈائنامک میٹا رزلٹس (جب صارف کچھ بھی ٹائپ کرے) */}
+        {cleanQuery.length > 1 && (
+          <div className="mb-12 animate-fadeIn">
+            <div className="flex items-center justify-between mb-4 px-1">
+              <h2 className="text-base sm:text-lg font-black text-indigo-400 flex items-center gap-2">
+                <span>⚡</span>
+                <span>{isUr ? `"${search}" کے براہِ راست سرچ نتائج (Deep Links)` : `Direct Search Engines for "${search}"`}</span>
+              </h2>
+              <span className="text-[11px] opacity-60">
+                {isUr ? 'خودکار طور پر تیار کردہ' : 'Auto Generated'}
+              </span>
+            </div>
 
-              <div className={`mt-6 pt-4 border-t flex items-center justify-between ${
-                isDark ? 'border-slate-800/80' : 'border-slate-100'
-              }`}>
-                <span className="text-[11px] font-semibold opacity-50">
-                  {isUr ? 'تصدیق شدہ پلیٹ فارم' : 'Verified Partner'}
-                </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {metaEngines.map((engine, idx) => (
                 <a
-                  href={item.url}
+                  key={idx}
+                  href={engine.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 inline-flex items-center gap-1.5"
+                  className={`p-5 rounded-2xl border transition-all duration-200 hover:-translate-y-1 block ${
+                    isDark
+                      ? 'bg-gradient-to-b from-[#151c2e] to-[#0f172a] border-indigo-500/30 hover:border-indigo-400 shadow-lg shadow-indigo-950/40'
+                      : 'bg-white border-indigo-200 hover:border-indigo-500 shadow-md'
+                  }`}
                 >
-                  <span>{isUr ? 'ابھی وزٹ کریں' : 'Explore Now'}</span>
-                  <span>{isUr ? '←' : '→'}</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xl">{engine.icon}</span>
+                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400">
+                      {engine.badge}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-sm mb-1">{engine.name}</h3>
+                  <p className="text-xs opacity-70 line-clamp-2 leading-relaxed mb-4">
+                    {isUr ? engine.descUr : engine.descEn}
+                  </p>
+                  <div className="text-xs font-black text-indigo-400 inline-flex items-center gap-1">
+                    <span>{isUr ? 'براہِ راست اوپن کریں' : 'Open Search'}</span>
+                    <span>{isUr ? '←' : '→'}</span>
+                  </div>
                 </a>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {filteredList.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-sm font-semibold opacity-50">
-              {isUr ? 'آپ کی مطلوبہ تلاش کا کوئی نتیجہ نہیں ملا۔' : 'No matching tools or courses found.'}
-            </p>
           </div>
         )}
+
+        {/* عام فہرست و فلٹرز */}
+        <div>
+          <div className="flex items-center justify-between mb-4 px-1">
+            <h2 className="text-sm font-bold opacity-70 uppercase tracking-wider">
+              {isUr ? 'منتخب ڈائریکٹری اور تصدیق شدہ پلیٹ فارمز' : 'Verified Directory & Listings'}
+            </h2>
+            <span className="text-xs opacity-50">
+              {filteredList.length} {isUr ? 'نتائج' : 'items'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {filteredList.map(item => (
+              <div
+                key={item.id}
+                className={`p-6 rounded-3xl border transition-all duration-300 flex flex-col justify-between ${
+                  item.isSponsored
+                    ? isDark
+                      ? 'bg-[#111827]/90 border-indigo-500/40 shadow-xl shadow-indigo-600/5'
+                      : 'bg-indigo-50/40 border-indigo-200 shadow-xl shadow-indigo-500/5'
+                    : isDark
+                      ? 'bg-[#111827]/40 border-slate-800/80 hover:border-slate-700'
+                      : 'bg-white border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-[11px] font-bold px-3 py-1 rounded-lg ${
+                      isDark ? 'bg-slate-800/70 text-slate-300' : 'bg-slate-100 text-slate-700'
+                    }`}>
+                      {item.category}
+                    </span>
+                    {item.isSponsored && (
+                      <span className="text-[11px] font-black px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                        {isUr ? 'نمایاں پارٹنر' : 'Featured Partner'}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 tracking-tight">{item.title}</h3>
+                  <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${
+                    isDark ? 'text-slate-400' : 'text-slate-600'
+                  }`}>
+                    {isUr ? (item.descUr || item.descEn) : item.descEn}
+                  </p>
+                </div>
+
+                <div className={`mt-6 pt-4 border-t flex items-center justify-between ${
+                  isDark ? 'border-slate-800/80' : 'border-slate-100'
+                }`}>
+                  <span className="text-[11px] font-semibold opacity-50">
+                    {isUr ? 'تصدیق شدہ پلیٹ فارم' : 'Verified Partner'}
+                  </span>
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 inline-flex items-center gap-1.5"
+                  >
+                    <span>{isUr ? 'ابھی وزٹ کریں' : 'Explore Now'}</span>
+                    <span>{isUr ? '←' : '→'}</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredList.length === 0 && cleanQuery.length <= 1 && (
+            <div className="text-center py-20">
+              <p className="text-sm font-semibold opacity-50">
+                {isUr ? 'کوئی ٹول یا کورس نہیں ملا۔' : 'No directory items found.'}
+              </p>
+            </div>
+          )}
+        </div>
       </main>
 
       <footer className={`border-t py-6 text-center text-xs opacity-60 ${
