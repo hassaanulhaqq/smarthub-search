@@ -8,8 +8,9 @@ const INITIAL_DATA = [
     title: "Google AI Essentials",
     category: "Courses",
     url: "https://coursera.org",
-    descEn: "Learn foundational AI concepts and productivity tools from Google experts.",
-    descUr: "گوگل کے ماہرین سے بنیادی AI کے تصورات اور ٹولز سیکھیں۔",
+    tags: ["google", "ai", "course", "free", "training"],
+    descEn: "Learn foundational AI concepts and free productivity tools from Google experts.",
+    descUr: "گوگل کے ماہرین سے بنیادی AI کے تصورات اور مفت ٹولز سیکھیں۔",
     isSponsored: true
   },
   {
@@ -17,6 +18,7 @@ const INITIAL_DATA = [
     title: "DeepLearning.AI Prompt Engineering",
     category: "Courses",
     url: "https://coursera.org",
+    tags: ["prompt", "ai", "llm", "deeplearning", "free"],
     descEn: "Master LLM prompting techniques and workflows directly from Andrew Ng.",
     descUr: "اینڈریو این جی سے جدید پرامپٹ انجینئرنگ اور طریقے سیکھیں۔",
     isSponsored: false
@@ -26,6 +28,7 @@ const INITIAL_DATA = [
     title: "Perplexity Pro Research Suite",
     category: "AI Tools",
     url: "https://perplexity.ai",
+    tags: ["search", "free", "ai", "research", "assistant"],
     descEn: "Real-time discovery and multi-source verified search engine for professionals.",
     descUr: "پیشہ ور افراد کے لیے جدید، ریئل ٹائم اور تصدیق شدہ ریسرچ انجن۔",
     isSponsored: true
@@ -35,6 +38,7 @@ const INITIAL_DATA = [
     title: "Claude 3.5 Sonnet Ecosystem",
     category: "AI Tools",
     url: "https://anthropic.com",
+    tags: ["claude", "ai", "free", "coding", "assistant"],
     descEn: "Advanced coding, analytical reasoning, and long-form document processing.",
     descUr: "جدید کوڈنگ، تفصیلی تجزیہ اور طویل دستاویزات پروسیسنگ کے لیے بہترین۔",
     isSponsored: false
@@ -44,6 +48,7 @@ const INITIAL_DATA = [
     title: "Upwork Remote Talent Network",
     category: "Remote Jobs",
     url: "https://upwork.com",
+    tags: ["jobs", "freelance", "work", "remote", "excel"],
     descEn: "Global marketplace for top freelance talent, contracts, and remote engineering jobs.",
     descUr: "فری لانسرز اور ریموٹ جابز کے لیے دنیا کا سب سے بڑا پلیٹ فارم۔",
     isSponsored: false
@@ -53,6 +58,7 @@ const INITIAL_DATA = [
     title: "Notion AI Workspace",
     category: "Productivity",
     url: "https://notion.so",
+    tags: ["notes", "productivity", "office", "ai", "free"],
     descEn: "Connected workspace with integrated artificial intelligence for notes and docs.",
     descUr: "دفتری کام، نوٹس اور پراجیکٹ مینجمنٹ کے لیے بہترین AI ٹول۔",
     isSponsored: false
@@ -110,7 +116,8 @@ export default function App() {
       url: formUrl,
       descEn: formDesc,
       descUr: formDesc,
-      isSponsored: formSponsored
+      isSponsored: formSponsored,
+      tags: formTitle.toLowerCase().split(' ')
     };
 
     setItems([newItem, ...items]);
@@ -127,56 +134,145 @@ export default function App() {
   const isDark = theme === 'dark';
   const isUr = lang === 'ur';
 
-  // لائیو فلٹرنگ فکس
-  const cleanQuery = search.trim().toLowerCase();
+  // لچکدار اندرونی سرچ: اگر یوزر "Free AI Tools" لکھے تو یہ انفرادی الفاظ کو بھی چیک کرے گا
+  const queryWords = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  
   const filteredList = items.filter(item => {
-    const titleMatch = item.title ? item.title.toLowerCase().includes(cleanQuery) : false;
-    const descEnMatch = item.descEn ? item.descEn.toLowerCase().includes(cleanQuery) : false;
-    const descUrMatch = item.descUr ? item.descUr.toLowerCase().includes(cleanQuery) : false;
-    const catMatch = item.category ? item.category.toLowerCase().includes(cleanQuery) : false;
+    if (currentCat !== 'All' && item.category !== currentCat) {
+      return false;
+    }
+    if (queryWords.length === 0) return true;
 
-    const matchesQuery = cleanQuery === '' || titleMatch || descEnMatch || descUrMatch || catMatch;
-    const matchesCategory = currentCat === 'All' || item.category === currentCat;
-
-    return matchesQuery && matchesCategory;
+    const targetText = `${item.title} ${item.descEn \vert{}\vert{} ''}${item.descUr || ''} ${item.category}${(item.tags || []).join(' ')}`.toLowerCase();
+    
+    // اگر کوئی ایک لفظ بھی ملتا ہے تو لسٹ میں دکھائے
+    return queryWords.some(word => targetText.includes(word));
   });
 
-  // ڈائنامک میٹا سرچ لنکس جنریٹر (براہِ راست سرچ رزلٹس)
-  const encodedQuery = encodeURIComponent(search.trim());
-  const metaEngines = [
-    {
-      name: "Upwork Jobs",
-      badge: isUr ? "فری لانس جابز" : "Freelance Jobs",
-      icon: "💼",
-      url: `https://www.upwork.com/nx/search/jobs/?q=${encodedQuery}`,
-      descUr: `اپ ورک پر "${search.trim()}" کی تصدیق شدہ براہِ راست جابز دیکھیں۔`,
-      descEn: `Explore direct verified job posts for "${search.trim()}" on Upwork.`
-    },
-    {
-      name: "Coursera Certifications",
-      badge: isUr ? "کورسز و اسناد" : "Courses & Degrees",
-      icon: "🎓",
-      url: `https://www.coursera.org/search?query=${encodedQuery}`,
-      descUr: `کورسیرا پر "${search.trim()}" کے سرٹیفیکیشنز اور ماہرانہ ٹریننگ۔`,
-      descEn: `Direct university courses & certifications for "${search.trim()}".`
-    },
-    {
-      name: "Fiverr Marketplace",
-      badge: isUr ? "سروسز اور گگز" : "Gigs & Tasks",
-      icon: "⚡",
-      url: `https://www.fiverr.com/search/gigs?query=${encodedQuery}`,
-      descUr: `فائیور پر "${search.trim()}" سے متعلق ریٹ اور خدمات دیکھیں۔`,
-      descEn: `View high-demand gigs and pricing for "${search.trim()}" on Fiverr.`
-    },
-    {
-      name: "Google Remote Careers",
-      badge: isUr ? "گلوبل جابز" : "Global Openings",
-      icon: "🌐",
-      url: `https://www.google.com/search?q=${encodedQuery}+remote+jobs&ibp=htl;jobs`,
-      descUr: `گوگل جابز انجن پر "${search.trim()}" کی گلوبل اوپننگز براؤز کریں۔`,
-      descEn: `Direct Google Jobs feed for "${search.trim()}" remote openings.`
+  // یوزر کے ارادے (Intent) کی بنیاد پر متعلقہ بیرونی سرچ پورٹلز منتخب کرنا
+  const rawQ = search.trim().toLowerCase();
+  const encodedQ = encodeURIComponent(search.trim());
+
+  const getAdaptiveEngines = () => {
+    if (!rawQ) return [];
+
+    const isJobIntent = /job|work|career|freelance|hiring|remote|gig|fiverr|upwork/.test(rawQ);
+    const isCourseIntent = /course|learn|certif|degree|class|tutorial|study/.test(rawQ);
+    const isAiToolIntent = /ai|tool|bot|generator|gpt|model|app|software|productivity/.test(rawQ);
+
+    // 1. اگر جاب سرچ ہو
+    if (isJobIntent) {
+      return [
+        {
+          name: "Upwork Global",
+          badge: isUr ? "فری لانس جابز" : "Freelance",
+          icon: "💼",
+          url: `https://www.upwork.com/nx/search/jobs/?q=${encodedQ}`, descUr: `اپ ورک پر "${search.trim()}" کی براہِ راست پوسٹنگز۔`,
+          descEn: `Direct active listings on Upwork.`
+        },
+        {
+          name: "Fiverr Marketplace",
+          badge: isUr ? "گگز و سروسز" : "Gigs & Services",
+          icon: "⚡",
+          url: `https://www.fiverr.com/search/gigs?query=${encodedQ}`,
+          descUr: `فائیور پر متعلقہ گگز اور پروجیکٹس۔`,
+          descEn: `Direct gig rates & sellers on Fiverr.`
+        },
+        {
+          name: "Google Remote Jobs",
+          badge: isUr ? "گلوبل جابز" : "Remote Jobs",
+          icon: "🌐",
+          url: `https://www.google.com/search?q=${encodedQ}+remote+jobs&ibp=htl;jobs`,
+          descUr: `گوگل جابز انجن پر دنیا بھر سے اوپننگز۔`,
+          descEn: `Aggregated international job boards.`
+        },
+        {
+          name: "LinkedIn Search",
+          badge: isUr ? "پیشہ ورانہ جابز" : "Professional",
+          icon: "👔",
+          url: `https://www.linkedin.com/jobs/search/?keywords=${encodedQ}`,
+          descUr: `لنکڈ ان پر براہِ راست کمپنیوں کی جابز۔`,
+          descEn: `Verified company openings on LinkedIn.`
+        }
+      ];
     }
-  ];
+
+    // 2. اگر کورس سرچ ہو
+    if (isCourseIntent) {
+      return [
+        {
+          name: "Coursera",
+          badge: isUr ? "یونیورسٹی کورسز" : "Certifications",
+          icon: "🎓",
+          url: `https://www.coursera.org/search?query=${encodedQ}`,
+          descUr: `مستند یونیورسٹی اسناد اور پروگرامز۔`,
+          descEn: `Accredited university programs.`
+        },
+        {
+          name: "edX Platform",
+          badge: isUr ? "اکیڈمک کورسز" : "Free & Verified",
+          icon: "📚",
+          url: `https://www.edx.org/search?q=${encodedQ}`,
+          descUr: `دنیا کی بہترین یونیورسٹیوں کے کورسز۔`,
+          descEn: `Top global university courses.`
+        },
+        {
+          name: "YouTube Learn",
+          badge: isUr ? "مفت ویڈیوز" : "Free Tutorials",
+          icon: "▶️",
+          url: `https://www.youtube.com/results?search_query=${encodedQ}+complete+course`,
+          descUr: `یوٹیوب پر مکمل اور مفت ٹریننگز۔`,
+          descEn: `Free practical video breakdowns.`
+        },
+        {
+          name: "Udemy Directory",
+          badge: isUr ? "پریکٹیکل ہنر" : "Skill Courses",
+          icon: "🎯",
+          url: `https://www.udemy.com/courses/search/?q=${encodedQ}`,
+          descUr: `عملی صلاحیتوں کے جدید آن لائن کورسز۔`,
+          descEn: `Practical hands-on masterclasses.`
+        }
+      ];
+    }
+
+    // 3. ڈیفالٹ یا AI ٹولز کی سرچ (جیسے Free AI Tools)
+    return [
+      {
+        name: "Futurepedia",
+        badge: isUr ? "AI ٹولز لسٹ" : "AI Directory",
+        icon: "🤖",
+        url: `https://www.futurepedia.io/ai-tools?q=${encodedQ}`,
+        descUr: `دنیا کی سب سے بڑی AI ڈائریکٹری پر رزلٹس۔`,
+        descEn: `Largest verified AI tools repository.`
+      },
+      {
+        name: "Product Hunt",
+        badge: isUr ? "نئے ٹولز" : "Trending Tools",
+        icon: "🚀",
+        url: `https://www.producthunt.com/search?q=${encodedQ}`,
+        descUr: `آج لانچ ہونے والے بہترین اور مفت ٹولز۔`,
+        descEn: `Top rated software launched today.`
+      },
+      {
+        name: "GitHub Open Source",
+        badge: isUr ? "اوپن سورس" : "Open Source",
+        icon: "💻",
+        url: `https://github.com/search?q=${encodedQ}&type=repositories`,
+        descUr: `مفت اور اوپن سورس AI سافٹ ویئر۔`,
+        descEn: `100% free open-source projects.`
+      },
+      {
+        name: "Google Direct Discovery",
+        badge: isUr ? "ویب تلاش" : "Direct Search",
+        icon: "🔍",
+        url: `https://www.google.com/search?q=${encodedQ}`,
+        descUr: `گوگل کے ذریعے مستند ترین سافٹ ویئر۔`,
+        descEn: `Search results across the wider web.`
+      }
+    ];
+  };
+
+  const dynamicEngines = getAdaptiveEngines();
 
   // Admin View
   if (isAdminOpen) {
@@ -185,11 +281,8 @@ export default function App() {
         <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-slate-50 text-slate-900'} flex items-center justify-center p-4`} dir={isUr ? 'rtl' : 'ltr'}>
           <div className={`max-w-md w-full ${isDark ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl p-8 shadow-2xl`}>
             <h2 className="text-2xl font-black text-center mb-2">
-              {isUr ? 'ایڈمن ڈیش بورڈ رسائی' : 'Admin Dashboard Login'}
+              {isUr ? 'ایڈمن ڈیش بورڈ لاگ ان' : 'Admin Login'}
             </h2>
-            <p className={`text-xs text-center mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              {isUr ? 'خفیہ 4 ہندسوں کا PIN درج کریں' : 'Enter 4-digit secret PIN'}
-            </p>
             <form onSubmit={handleLogin} className="space-y-4">
               <input
                 type="password"
@@ -205,7 +298,7 @@ export default function App() {
               {loginError && <p className="text-rose-500 text-xs text-center font-bold">{loginError}</p>}
               <button
                 type="submit"
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold transition-all shadow-lg shadow-indigo-600/30"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold transition-all shadow-lg"
               >
                 {isUr ? 'لاگ ان کریں' : 'Unlock Dashboard'}
               </button>
@@ -214,7 +307,7 @@ export default function App() {
                 onClick={() => setIsAdminOpen(false)}
                 className={`w-full py-2 text-xs font-semibold ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
               >
-                {isUr ? '← ہوم پیج پر واپس جائیں' : '← Back to Home'}
+                {isUr ? '← واپس جائیں' : '← Back'}
               </button>
             </form>
           </div>
@@ -223,15 +316,8 @@ export default function App() {
     }
 
     return (
-      <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-slate-50 text-slate-900'} p-6 md:p-12`} dir={isUr ? 'rtl' : 'ltr'}>
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-wrap items-center justify-between pb-6 border-b border-slate-800 gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-black">
-                {isUr ? 'اسمارٹ ہب ایڈمن روم' : 'SmartHub Management'}
-              </h1>
-              <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                {isUr ? 'نئے ٹولز، افیلیئٹ لنکس اور اسپانسرڈ سلاٹ مینیجر' : 'Add new items, modify links and featured listings'}
+      <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-slate-50 text-slate-900'} p-6 md:p-12`} dir={isUr ? 'rtl' : 'ltr'}> <div className="max-w-6xl mx-auto"> <div className="flex flex-wrap items-center justify-between pb-6 border-b border-slate-800 gap-4"> <div> <h1 className="text-2xl md:text-3xl font-black">{isUr ? 'ایڈمن پینل' : 'Admin Panel'}</h1> <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                {isUr ? 'نئے ٹولز، افیلیئٹ لنکس کا اندراج' : 'Manage entries and affiliate URLs'}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -239,7 +325,7 @@ export default function App() {
                 onClick={() => setIsAdminOpen(false)}
                 className={`px-4 py-2 rounded-xl text-xs font-bold border ${isDark ? 'bg-slate-900 border-slate-800 text-slate-200' : 'bg-white border-slate-300 text-slate-800'}`}
               >
-                {isUr ? 'سائٹ دیکھیں' : 'View Live Site'}
+                {isUr ? 'ویب سائٹ دیکھیں' : 'View Site'}
               </button>
               <button
                 onClick={() => { setIsLoggedIn(false); setIsAdminOpen(false); }}
@@ -252,16 +338,15 @@ export default function App() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
             <div className={`lg:col-span-1 p-6 rounded-3xl border h-fit ${isDark ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'}`}>
-              <h3 className="font-bold text-base mb-4">{isUr ? 'نیا آئٹم شامل کریں' : 'Add New Directory Entry'}</h3>
+              <h3 className="font-bold text-base mb-4">{isUr ? 'نیا آئٹم شامل کریں' : 'Add Item'}</h3>
               <form onSubmit={handleAddItem} className="space-y-4 text-xs font-medium">
                 <div>
-                  <label className="block mb-1 opacity-70">{isUr ? 'نام / ٹائٹل' : 'Platform / Tool Title'}</label>
+                  <label className="block mb-1 opacity-70">{isUr ? 'نام' : 'Title'}</label>
                   <input
                     type="text"
                     required
                     value={formTitle}
                     onChange={(e) => setFormTitle(e.target.value)}
-                    placeholder={isUr ? 'مثلاً Coursera Plus' : 'e.g. Perplexity Pro'}
                     className={`w-full p-2.5 rounded-xl border ${isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'} focus:outline-none focus:border-indigo-500`}
                   />
                 </div>
@@ -281,13 +366,12 @@ export default function App() {
                 </div>
 
                 <div>
-                  <label className="block mb-1 opacity-70">{isUr ? 'افیلیئٹ / ٹارگٹ URL' : 'Target / Affiliate URL'}</label>
+                  <label className="block mb-1 opacity-70">{isUr ? 'لنک / افیلیئٹ URL' : 'Target URL'}</label>
                   <input
                     type="url"
                     required
                     value={formUrl}
                     onChange={(e) => setFormUrl(e.target.value)}
-                    placeholder="https://..."
                     className={`w-full p-2.5 rounded-xl border ${isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'} focus:outline-none focus:border-indigo-500`}
                   />
                 </div>
@@ -298,7 +382,6 @@ export default function App() {
                     rows={3}
                     value={formDesc}
                     onChange={(e) => setFormDesc(e.target.value)}
-                    placeholder={isUr ? 'ٹول کے بارے میں تفصیل درج کریں...' : 'Short brief about platform benefits...'}
                     className={`w-full p-2.5 rounded-xl border ${isDark ? 'bg-[#0b0f19] border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'} focus:outline-none focus:border-indigo-500`}
                   />
                 </div>
@@ -312,303 +395,26 @@ export default function App() {
                     className="w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer"
                   />
                   <label htmlFor="adminSponsor" className="cursor-pointer font-bold text-amber-500">
-                    {isUr ? 'Sponsored (ٹاپ پر نمایاں رکھیں)' : 'Featured Partner Slot'}
+                    {isUr ? 'Sponsored (ٹاپ پر نمایاں رکھیں)' : 'Featured Slot'}
                   </label>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all mt-2"
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all"
                 >
-                  {isUr ? 'ویب سائٹ میں شامل کریں' : 'Publish Listing'}
+                  {isUr ? 'ویب سائٹ میں شامل کریں' : 'Save'}
                 </button>
               </form>
             </div>
 
             <div className={`lg:col-span-2 p-6 rounded-3xl border ${isDark ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'}`}>
-              <h3 className="font-bold text-base mb-4">
-                {isUr ? `موجودہ لسٹنگز (${items.length})` : `All Verified Items (${items.length})`}
-              </h3>
+              <h3 className="font-bold text-base mb-4">{isUr ? `موجودہ لسٹنگز (${items.length})` : `Listings (${items.length})`}</h3>
               <div className="space-y-3">
                 {items.map(item => (
                   <div
                     key={item.id}
-                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                      isDark ? 'bg-[#0b0f19] border-slate-800' : 'bg-slate-50 border-slate-200'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm">{item.title}</span>
-                        {item.isSponsored && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                            SPONSORED
-                          </span>
-                        )}
-                        <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/10 text-indigo-400 font-bold">
-                          {item.category}
-                        </span>
-                      </div>
-                      <p className={`text-xs mt-1 line-clamp-1 opacity-70`}>{isUr ? (item.descUr || item.descEn) : item.descEn}</p>
-                      <a href={item.url} target="_blank" rel="noreferrer" className="text-[11px] text-indigo-400 hover:underline">
-                        {item.url}
-                      </a>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteItem(item.id)}
-                      className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg text-xs font-bold self-end sm:self-center"
-                    >
-                      {isUr ? 'ڈیلیٹ' : 'Delete'}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Home Screen
-  return (
-    <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-[#f8fafc] text-slate-900'} flex flex-col transition-colors duration-200`} dir={isUr ? 'rtl' : 'ltr'}>
-      {/* Header */}
+                    className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${ isDark ? 'bg-[#0b0f19] border-slate-800' : 'bg-slate-50 border-slate-200' }`} > <div> <div className="flex items-center gap-2"> <span className="font-bold text-sm">{item.title}</span> {item.isSponsored && ( <span className="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-400"> SPONSORED </span> )} <span className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/10 text-indigo-400 font-bold"> {item.category} </span> </div> <p className="text-xs mt-1 line-clamp-1 opacity-70">{isUr ? (item.descUr \vert{}\vert{} item.descEn) : item.descEn}</p> </div> <button onClick={() => handleDeleteItem(item.id)} className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-lg text-xs font-bold" > {isUr ? 'ڈیلیٹ' : 'Delete'} </button> </div> ))} </div> </div> </div> </div> </div> ); }  // Home Screen return ( <div className={`min-h-screen ${isDark ? 'bg-[#0b0f19] text-white' : 'bg-[#f8fafc] text-slate-900'} flex flex-col transition-colors duration-200`} dir={isUr ? 'rtl' : 'ltr'}>
+      {/* Navbar */}
       <header className={`sticky top-0 z-50 border-b backdrop-blur-md px-4 sm:px-8 py-3.5 ${
-        isDark ? 'bg-[#0b0f19]/80 border-slate-800/80' : 'bg-white/80 border-slate-200'
-      }`}>
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-indigo-500/20">
-              S
-            </div>
-            <div>
-              <span className="text-lg font-black tracking-tight block leading-none">SmartHub</span>
-              <span className="text-[10px] text-indigo-400 tracking-wider font-bold uppercase">Meta Search & Discovery</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setLang(isUr ? 'en' : 'ur')}
-              className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
-                isDark ? 'bg-[#111827] border-slate-700 text-slate-200 hover:border-slate-500' : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400'
-              }`}
-            >
-              {isUr ? 'English' : 'اردو'}
-            </button>
-
-            <button
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className={`p-2 rounded-xl border text-sm transition-all ${
-                isDark ? 'bg-[#111827] border-slate-700 text-amber-400 hover:border-slate-500' : 'bg-white border-slate-300 text-indigo-600 hover:border-slate-400'
-              }`}
-              title="Toggle Theme"
-            >
-              {isDark ? '☀️' : '🌙'}
-            </button>
-
-            <button
-              onClick={() => setIsAdminOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-bold transition-all flex items-center gap-1.5"
-            >
-              <span>{isUr ? 'ایڈمن' : 'Admin'}</span>
-              <span>🔒</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-12">
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
-            {isUr ? (
-              <>مطلوبہ جابز، کورسز اور <span className="text-indigo-500">AI ٹولز</span> تلاش کریں</>
-            ) : (
-              <>Search Direct Jobs, Certifications & <span className="text-indigo-500">AI Tools</span></>
-            )}
-          </h1>
-          <p className={`text-sm sm:text-base font-medium max-w-xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            {isUr
-              ? 'کسی بھی مخصوص ہنر یا کورس کا نام لکھیں، ہم تمام تصدیق شدہ پورٹلز سے براہِ راست سرچ لنکس سامنے لائیں گے۔'
-              : 'Type any skill, task or certification to access direct deep-search queries across verified platforms.'}
-          </p>
-
-          {/* سرچ ان پٹ */}
-          <div className="mt-8 relative max-w-2xl mx-auto">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={isUr ? 'مثلاً: Online Excel Jobs یا Python AI Course...' : 'e.g. Online Excel Jobs, Prompt Engineering...'}
-              className={`w-full py-4 px-6 rounded-2xl border text-sm sm:text-base shadow-xl focus:outline-none focus:border-indigo-500 transition-all ${
-                isDark ? 'bg-[#111827] border-slate-800 placeholder-slate-500 text-white' : 'bg-white border-slate-300 placeholder-slate-400 text-slate-900'
-              }`}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="absolute top-1/2 -translate-y-1/2 end-4 text-xs opacity-50 hover:opacity-100 bg-slate-800 text-white px-2 py-1 rounded-md"
-              >
-                ✕ {isUr ? 'صاف کریں' : 'Clear'}
-              </button>
-            )}
-          </div>
-
-          {/* کیٹیگریز */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
-            {[
-              { id: 'All', ur: 'تمام', en: 'All' },
-              { id: 'AI Tools', ur: 'AI ٹولز', en: 'AI Tools' },
-              { id: 'Courses', ur: 'کورسز', en: 'Courses' },
-              { id: 'Productivity', ur: 'پروڈکٹیوٹی', en: 'Productivity' },
-              { id: 'Remote Jobs', ur: 'ریموٹ جابز', en: 'Remote Jobs' }
-            ].map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setCurrentCat(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                  currentCat === cat.id
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                    : isDark
-                      ? 'bg-[#111827] border border-slate-800 text-slate-400 hover:text-white'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {isUr ? cat.ur : cat.en}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ڈائنامک میٹا رزلٹس (جب صارف کچھ بھی ٹائپ کرے) */}
-        {cleanQuery.length > 1 && (
-          <div className="mb-12 animate-fadeIn">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <h2 className="text-base sm:text-lg font-black text-indigo-400 flex items-center gap-2">
-                <span>⚡</span>
-                <span>{isUr ? `"${search}" کے براہِ راست سرچ نتائج (Deep Links)` : `Direct Search Engines for "${search}"`}</span>
-              </h2>
-              <span className="text-[11px] opacity-60">
-                {isUr ? 'خودکار طور پر تیار کردہ' : 'Auto Generated'}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {metaEngines.map((engine, idx) => (
-                <a
-                  key={idx}
-                  href={engine.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`p-5 rounded-2xl border transition-all duration-200 hover:-translate-y-1 block ${
-                    isDark
-                      ? 'bg-gradient-to-b from-[#151c2e] to-[#0f172a] border-indigo-500/30 hover:border-indigo-400 shadow-lg shadow-indigo-950/40'
-                      : 'bg-white border-indigo-200 hover:border-indigo-500 shadow-md'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl">{engine.icon}</span>
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400">
-                      {engine.badge}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-sm mb-1">{engine.name}</h3>
-                  <p className="text-xs opacity-70 line-clamp-2 leading-relaxed mb-4">
-                    {isUr ? engine.descUr : engine.descEn}
-                  </p>
-                  <div className="text-xs font-black text-indigo-400 inline-flex items-center gap-1">
-                    <span>{isUr ? 'براہِ راست اوپن کریں' : 'Open Search'}</span>
-                    <span>{isUr ? '←' : '→'}</span>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* عام فہرست و فلٹرز */}
-        <div>
-          <div className="flex items-center justify-between mb-4 px-1">
-            <h2 className="text-sm font-bold opacity-70 uppercase tracking-wider">
-              {isUr ? 'منتخب ڈائریکٹری اور تصدیق شدہ پلیٹ فارمز' : 'Verified Directory & Listings'}
-            </h2>
-            <span className="text-xs opacity-50">
-              {filteredList.length} {isUr ? 'نتائج' : 'items'}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {filteredList.map(item => (
-              <div
-                key={item.id}
-                className={`p-6 rounded-3xl border transition-all duration-300 flex flex-col justify-between ${
-                  item.isSponsored
-                    ? isDark
-                      ? 'bg-[#111827]/90 border-indigo-500/40 shadow-xl shadow-indigo-600/5'
-                      : 'bg-indigo-50/40 border-indigo-200 shadow-xl shadow-indigo-500/5'
-                    : isDark
-                      ? 'bg-[#111827]/40 border-slate-800/80 hover:border-slate-700'
-                      : 'bg-white border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-[11px] font-bold px-3 py-1 rounded-lg ${
-                      isDark ? 'bg-slate-800/70 text-slate-300' : 'bg-slate-100 text-slate-700'
-                    }`}>
-                      {item.category}
-                    </span>
-                    {item.isSponsored && (
-                      <span className="text-[11px] font-black px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                        {isUr ? 'نمایاں پارٹنر' : 'Featured Partner'}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-xl font-bold mb-2 tracking-tight">{item.title}</h3>
-                  <p className={`text-xs sm:text-sm leading-relaxed line-clamp-2 ${
-                    isDark ? 'text-slate-400' : 'text-slate-600'
-                  }`}>
-                    {isUr ? (item.descUr || item.descEn) : item.descEn}
-                  </p>
-                </div>
-
-                <div className={`mt-6 pt-4 border-t flex items-center justify-between ${
-                  isDark ? 'border-slate-800/80' : 'border-slate-100'
-                }`}>
-                  <span className="text-[11px] font-semibold opacity-50">
-                    {isUr ? 'تصدیق شدہ پلیٹ فارم' : 'Verified Partner'}
-                  </span>
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/20 inline-flex items-center gap-1.5"
-                  >
-                    <span>{isUr ? 'ابھی وزٹ کریں' : 'Explore Now'}</span>
-                    <span>{isUr ? '←' : '→'}</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {filteredList.length === 0 && cleanQuery.length <= 1 && (
-            <div className="text-center py-20">
-              <p className="text-sm font-semibold opacity-50">
-                {isUr ? 'کوئی ٹول یا کورس نہیں ملا۔' : 'No directory items found.'}
-              </p>
-            </div>
-          )}
-        </div>
-      </main>
-
-      <footer className={`border-t py-6 text-center text-xs opacity-60 ${
-        isDark ? 'border-slate-800' : 'border-slate-200'
-      }`}>
-        © 2026 SmartHub Search. {isUr ? 'جملہ حقوق محفوظ ہیں۔' : 'All rights reserved.'}
-      </footer>
-    </div>
-  );
-}
+        isDark ? 'bg-[#0b0f19]/80 border-slate-800/80' : 'bg-white/8
